@@ -1,0 +1,6 @@
+devel_space: /home/arijin/cuttle.auto/preProcess/catkin_label/devel
+install: true
+install_space: /home/arijin/cuttle.auto/preProcess/catkin_label/install
+profile: default
+source_space: /home/arijin/cuttle.auto/preProcess/catkin_label/src
+workspace: /home/arijin/cuttle.auto/preProcess/catkin_label

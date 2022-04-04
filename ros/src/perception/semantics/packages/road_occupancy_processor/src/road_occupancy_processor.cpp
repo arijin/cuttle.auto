@@ -22,55 +22,6 @@
 
 #include "road_occupancy_processor/road_occupancy_processor.h"
 
-void ROSRoadOccupancyProcessorApp::ConvertXYZIToRTZ(const pcl::PointCloud<pcl::PointXYZI>::Ptr in_cloud,
-													ROSRoadOccupancyProcessorApp::PointCloudXYZIRTColor &out_organized_points,
-													std::vector<pcl::PointIndices> &out_radial_divided_indices,
-													std::vector<ROSRoadOccupancyProcessorApp::PointCloudXYZIRTColor> &out_radial_ordered_clouds)
-{
-	out_organized_points.resize(in_cloud->points.size());
-	out_radial_divided_indices.clear();
-	out_radial_divided_indices.resize(radial_dividers_num_);
-	out_radial_ordered_clouds.resize(radial_dividers_num_);
-
-	for (size_t i = 0; i < in_cloud->points.size(); i++)
-	{
-		PointXYZIRT new_point;
-		auto radius = (float)sqrt(
-			in_cloud->points[i].x * in_cloud->points[i].x + in_cloud->points[i].y * in_cloud->points[i].y);
-		auto theta = (float)atan2(in_cloud->points[i].y, in_cloud->points[i].x) * 180 / M_PI;
-		if (theta < 0)
-		{
-			theta += 360;
-		}
-
-		auto radial_div = (size_t)floor(theta / radial_divider_angle_);					  // 0.1
-		auto concentric_div = (size_t)floor(fabs(radius / concentric_divider_distance_)); // 1
-
-		new_point.point = in_cloud->points[i];
-		new_point.radius = radius;
-		new_point.theta = theta;
-		new_point.radial_div = radial_div;
-		new_point.concentric_div = concentric_div;
-		new_point.original_index = i;
-
-		out_organized_points[i] = new_point;
-
-		//radial divisions
-		out_radial_divided_indices[radial_div].indices.push_back(i);
-
-		out_radial_ordered_clouds[radial_div].push_back(new_point);
-
-	} //end for
-
-	//order radial points on each division
-#pragma omp for
-	for (size_t i = 0; i < radial_dividers_num_; i++)
-	{
-		std::sort(out_radial_ordered_clouds[i].begin(), out_radial_ordered_clouds[i].end(),
-				  [](const PointXYZIRT &a, const PointXYZIRT &b) { return a.radius < b.radius; });
-	}
-}
-
 void ROSRoadOccupancyProcessorApp::PublishGridMap(grid_map::GridMap &in_grid_map, const std::string &in_layer_publish)
 {
 	if (in_grid_map.exists(in_layer_publish))
@@ -121,27 +72,6 @@ void ROSRoadOccupancyProcessorApp::Convert3dPointToOccupancy(grid_map::GridMap &
 	out_point.y = (in_grid_map.getLength().x() - origin_x_offset - in_point.x) / in_grid_map.getResolution();
 }
 
-void ROSRoadOccupancyProcessorApp::DrawLineInGridMap(grid_map::GridMap &in_grid_map, cv::Mat &in_grid_image,
-													 const geometry_msgs::Point &in_start_point,
-													 const geometry_msgs::Point &in_end_point, uchar in_value)
-{
-	cv::Point cv_start_point, cv_end_point;
-	Convert3dPointToOccupancy(in_grid_map, in_start_point, cv_start_point);
-	Convert3dPointToOccupancy(in_grid_map, in_end_point, cv_end_point);
-
-	cv::Rect rect(cv::Point(), in_grid_image.size());
-
-	if (!rect.contains(cv_start_point) || !rect.contains(cv_end_point))
-	{
-		return;
-	}
-	if (in_grid_image.at<uchar>(cv_start_point.y, cv_start_point.x) != OCCUPANCY_NO_ROAD && in_grid_image.at<uchar>(cv_end_point.y, cv_end_point.x) != OCCUPANCY_NO_ROAD)
-	{
-		const int line_width = 3;
-		cv::line(in_grid_image, cv_start_point, cv_end_point, cv::Scalar(in_value), line_width);
-	}
-}
-
 void ROSRoadOccupancyProcessorApp::SetPointInGridMap(grid_map::GridMap &in_grid_map, cv::Mat &in_grid_image,
 													 const geometry_msgs::Point &in_point, uchar in_value)
 {
@@ -162,10 +92,30 @@ void ROSRoadOccupancyProcessorApp::SetPointInGridMap(grid_map::GridMap &in_grid_
 	}
 }
 
-void ROSRoadOccupancyProcessorApp::GridMapCallback(const grid_map_msgs::GridMap &in_message)
+void ROSRoadOccupancyProcessorApp::ConvertPointCloud(const pcl::PointCloud<pcl::PointXYZI> &in_pointcloud,
+													 const std::string &in_targetframe,
+													 pcl::PointCloud<pcl::PointXYZI> &out_pointcloud)
+{
+	//check that both pointcloud and grid are in the same frame, otherwise transform
+	tf::StampedTransform map2sensor_transform;
+	while (true)
+	{
+		map2sensor_transform = FindTransform("/map", in_pointcloud.header.frame_id);
+		if (abs(in_pointcloud.header.stamp / 1000000.0 - map2sensor_transform.stamp_.toSec()) < 0.1)
+			break;
+	}
+
+	// ROS_INFO_STREAM("cloud time: " << std::fixed << std::setprecision(5) << in_pointcloud.header.stamp / 1000000.0 << ", "
+	// 							   << "tf time:" << std::fixed << std::setprecision(5) << map2sensor_transform.stamp_.toSec());
+	pcl::PointCloud<pcl::PointXYZI> map_pointcloud;
+	pcl_ros::transformPointCloud(in_pointcloud, map_pointcloud, map2sensor_transform);
+	pcl_ros::transformPointCloud(map_pointcloud, out_pointcloud, transform_.inverse());
+};
+
+void ROSRoadOccupancyProcessorApp::GridMapCallback(const autoware_msgs::GridMapInfo &in_message)
 {
 	grid_map::GridMap input_grid;
-	grid_map::GridMapRosConverter::fromMessage(in_message, input_grid);
+	grid_map::GridMapRosConverter::fromMessage(in_message.map, input_grid);
 
 	grid_map::GridMapCvConverter::toImage<unsigned char, 1>(input_grid,
 															wayarea_layer_name_,
@@ -178,82 +128,35 @@ void ROSRoadOccupancyProcessorApp::GridMapCallback(const grid_map_msgs::GridMap 
 	input_gridmap_length_ = input_grid.getLength();
 	input_gridmap_resolution_ = input_grid.getResolution();
 	input_gridmap_position_ = input_grid.getPosition();
+
+	transform_.frame_id_ = "/map";
+	transform_.child_frame_id_ = sensor_frame_;
+	transform_.setOrigin(tf::Vector3(in_message.trans.translation.x, in_message.trans.translation.y, in_message.trans.translation.z));
+	transform_.setRotation(tf::Quaternion(in_message.trans.rotation.x, in_message.trans.rotation.y, in_message.trans.rotation.z, in_message.trans.rotation.w));
 }
 
-void ROSRoadOccupancyProcessorApp::ConvertPointCloud(const pcl::PointCloud<pcl::PointXYZI> &in_pointcloud,
-													 const std::string &in_targetframe,
-													 pcl::PointCloud<pcl::PointXYZI> &out_pointcloud)
+void ROSRoadOccupancyProcessorApp::PointsCallback(const sensor_msgs::PointCloud2::ConstPtr &in_no_ground_cloud_msg)
 {
-	//check that both pointcloud and grid are in the same frame, otherwise transform
-	if (in_pointcloud.header.frame_id != in_targetframe)
-	{
-		ROS_INFO("transformPointCloud");
-		tf::Transform map2sensor_transform = FindTransform(in_targetframe, in_pointcloud.header.frame_id);
-		pcl_ros::transformPointCloud(in_pointcloud, out_pointcloud, map2sensor_transform);
-	}
-	else
-	{
-		out_pointcloud = in_pointcloud;
-	}
-};
 
-void ROSRoadOccupancyProcessorApp::PointsCallback(const sensor_msgs::PointCloud2::ConstPtr &in_ground_cloud_msg,
-												  const sensor_msgs::PointCloud2::ConstPtr &in_no_ground_cloud_msg)
-{
 	if (road_wayarea_original_mat_.empty())
 		return;
 
 	// timer start
-	//auto start = std::chrono::system_clock::now();
+	// auto start = std::chrono::system_clock::now();
+	pcl::PointCloud<pcl::PointXYZI>::Ptr in_no_ground_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+	pcl::PointCloud<pcl::PointXYZI>::Ptr final_no_ground_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+	pcl::fromROSMsg(*in_no_ground_cloud_msg, *in_no_ground_cloud);
+	//check that both pointcloud and grid are in the same frame, otherwise transform
+	ConvertPointCloud(*in_no_ground_cloud, sensor_frame_, *final_no_ground_cloud);
 
 	cv::Mat current_road_mat = road_wayarea_original_mat_.clone();
 	cv::Mat original_road_mat = current_road_mat.clone();
 
 	grid_map::GridMap output_gridmap;
-	output_gridmap.setFrameId(input_gridmap_frame_);
+	output_gridmap.setFrameId(sensor_frame_); //  input_gridmap_frame_
 	output_gridmap.setGeometry(input_gridmap_length_,
 							   input_gridmap_resolution_,
 							   input_gridmap_position_);
-
-	//output_gridmap[output_layer_name_].setConstant(OCCUPANCY_NO_ROAD);
-
-	pcl::PointCloud<pcl::PointXYZI>::Ptr in_ground_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-	pcl::PointCloud<pcl::PointXYZI>::Ptr in_no_ground_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-	pcl::PointCloud<pcl::PointXYZI>::Ptr final_ground_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-	pcl::PointCloud<pcl::PointXYZI>::Ptr final_no_ground_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-
-	pcl::fromROSMsg(*in_ground_cloud_msg, *in_ground_cloud);
-	pcl::fromROSMsg(*in_no_ground_cloud_msg, *in_no_ground_cloud);
-
-	//check that both pointcloud and grid are in the same frame, otherwise transform
-	ConvertPointCloud(*in_ground_cloud, output_gridmap.getFrameId(), *final_ground_cloud);
-	ConvertPointCloud(*in_no_ground_cloud, output_gridmap.getFrameId(), *final_no_ground_cloud);
-
-	//organize pointcloud in cylindrical coords
-	PointCloudXYZIRTColor organized_points;
-	std::vector<pcl::PointIndices> radial_division_indices;
-	std::vector<pcl::PointIndices> closest_indices;
-	std::vector<PointCloudXYZIRTColor> radial_ordered_clouds;
-
-	ConvertXYZIToRTZ(final_ground_cloud,
-					 organized_points,
-					 radial_division_indices,
-					 radial_ordered_clouds);
-
-	//draw lines between initial and last point of each ray
-	for (size_t i = 0; i < radial_ordered_clouds.size(); i++) //sweep through each radial division
-	{
-		geometry_msgs::Point prev_point;
-		for (size_t j = 0; j < radial_ordered_clouds[i].size(); j++) //loop through each point
-		{
-			geometry_msgs::Point current_point;
-			current_point.x = radial_ordered_clouds[i][j].point.x;
-			current_point.y = radial_ordered_clouds[i][j].point.y;
-			current_point.z = radial_ordered_clouds[i][j].point.z;
-
-			DrawLineInGridMap(output_gridmap, current_road_mat, prev_point, current_point, OCCUPANCY_ROAD_FREE);
-		}
-	}
 
 	//process obstacle points
 	for (const auto &point : final_no_ground_cloud->points)
@@ -265,37 +168,24 @@ void ROSRoadOccupancyProcessorApp::PointsCallback(const sensor_msgs::PointCloud2
 		SetPointInGridMap(output_gridmap, current_road_mat, sensor_point, OCCUPANCY_ROAD_OCCUPIED);
 	}
 
-#pragma omp for
-	for (int row = 0; row < current_road_mat.rows; row++)
-	{
-		for (int col = 0; col < current_road_mat.cols; col++)
-		{
-			if (original_road_mat.at<uchar>(row, col) == OCCUPANCY_NO_ROAD)
-			{
-				current_road_mat.at<uchar>(row, col) = OCCUPANCY_NO_ROAD;
-			}
-		}
-	}
 	// visualize test
 	//cv::imshow("result", current_road_mat);
 	//cv::waitKey(10);
-	LoadRoadLayerFromMat(output_gridmap, current_road_mat);
 
+	LoadRoadLayerFromMat(output_gridmap, current_road_mat);
 	PublishGridMap(output_gridmap, output_layer_name_);
+	tf_broadcaster_.sendTransform(transform_); // must after the OccupancyGrid msg published
 
 	// timer end
-	//auto end = std::chrono::system_clock::now();
-	//auto usec = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	//std::cout << "time: " << usec / 1000.0 << " [msec]" << std::endl;
+	// auto end = std::chrono::system_clock::now();
+	// auto usec = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+	// std::cout << "time: " << usec / 1000.0 << " [msec]" << std::endl;
 }
 
 void ROSRoadOccupancyProcessorApp::InitializeROSIo(ros::NodeHandle &in_private_handle)
 {
 	//get params
-	std::string points_ground_topic_str, points_no_ground_topic_str, wayarea_topic_str;
-
-	in_private_handle.param<std::string>("points_ground_src", points_ground_topic_str, "points_ground");
-	ROS_INFO("[%s] points_ground_src: %s", __APP_NAME__, points_ground_topic_str.c_str());
+	std::string points_no_ground_topic_str, wayarea_topic_str;
 
 	in_private_handle.param<std::string>("points_no_ground_src", points_no_ground_topic_str, "points_no_ground");
 	ROS_INFO("[%s] points_no_ground_src: %s", __APP_NAME__, points_no_ground_topic_str.c_str());
@@ -309,6 +199,9 @@ void ROSRoadOccupancyProcessorApp::InitializeROSIo(ros::NodeHandle &in_private_h
 	in_private_handle.param<std::string>("output_layer_name", output_layer_name_, "road_status");
 	ROS_INFO("[%s] output_layer_name: %s", __APP_NAME__, output_layer_name_.c_str());
 
+	in_private_handle.param<std::string>("sensor_frame", sensor_frame_, "velodyne_road_status");
+	ROS_INFO("[%s] output_layer_name: %s", __APP_NAME__, sensor_frame_.c_str());
+	// value definition
 	in_private_handle.param<int>("road_unknown_value", OCCUPANCY_ROAD_UNKNOWN, 128);
 	ROS_INFO("[%s] road_unknown_value: %d", __APP_NAME__, OCCUPANCY_ROAD_UNKNOWN);
 
@@ -321,26 +214,17 @@ void ROSRoadOccupancyProcessorApp::InitializeROSIo(ros::NodeHandle &in_private_h
 	in_private_handle.param<int>("no_road_value", OCCUPANCY_NO_ROAD, 255);
 	ROS_INFO("[%s] no_road_value: %d", __APP_NAME__, OCCUPANCY_NO_ROAD);
 
-	//generate subscribers and sychronizers
-	cloud_ground_subscriber_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(node_handle_,
-																						 points_ground_topic_str, 1);
-	ROS_INFO("[%s] Subscribing to... %s", __APP_NAME__, points_ground_topic_str.c_str());
-	cloud_no_ground_subscriber_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(node_handle_,
-																							points_no_ground_topic_str, 1);
+	//generate subscribers or sychronizers
+	cloud_no_ground_subscriber_ = node_handle_.subscribe(points_no_ground_topic_str, 1,
+														 &ROSRoadOccupancyProcessorApp::PointsCallback, this);
 	ROS_INFO("[%s] Subscribing to... %s", __APP_NAME__, points_no_ground_topic_str.c_str());
 
 	/*gridmap_subscriber_ = new message_filters::Subscriber<grid_map_msgs::GridMap>(node_handle_,
 	                                                                              wayarea_topic_str, 1);
 	gridmap_subscriber_->registerCallback(boost::bind(&ROSRoadOccupancyProcessorApp::PointsCallback, this));*/
-	gridmap_subscriber_ = node_handle_.subscribe(wayarea_topic_str, 10,
+	gridmap_subscriber_ = node_handle_.subscribe(wayarea_topic_str, 1,
 												 &ROSRoadOccupancyProcessorApp::GridMapCallback, this);
 	ROS_INFO("[%s] Subscribing to... %s", __APP_NAME__, wayarea_topic_str.c_str());
-
-	cloud_synchronizer_ =
-		new message_filters::Synchronizer<SyncPolicyT>(SyncPolicyT(100),
-													   *cloud_ground_subscriber_,
-													   *cloud_no_ground_subscriber_);
-	cloud_synchronizer_->registerCallback(boost::bind(&ROSRoadOccupancyProcessorApp::PointsCallback, this, _1, _2));
 
 	//register publishers
 	publisher_grid_map_ = node_handle_.advertise<grid_map_msgs::GridMap>("gridmap_road_status", 1);
@@ -363,7 +247,6 @@ ROSRoadOccupancyProcessorApp::FindTransform(const std::string &in_target_frame, 
 	{
 		ROS_ERROR("%s", ex.what());
 	}
-
 	return transform;
 }
 
@@ -399,5 +282,4 @@ void ROSRoadOccupancyProcessorApp::Run()
 
 ROSRoadOccupancyProcessorApp::ROSRoadOccupancyProcessorApp()
 {
-	radial_dividers_num_ = ceil(360 / radial_divider_angle_);
 }

@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/arijin/cuttle.auto/ros/devel/lib/liblibvectormap.a CMakeFiles/libvectormap.dir/src/vector_map.cpp.o
+/usr/bin/ranlib /home/arijin/cuttle.auto/ros/devel/lib/liblibvectormap.a

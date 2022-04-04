@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O2 -Wall    -Wl,--no-undefined  -shared -Wl,-soname,libget_file.so -o /home/arijin/cuttle.auto/ros/devel/lib/libget_file.so CMakeFiles/get_file.dir/lib/map_file/get_file.cpp.o  -lcurl 

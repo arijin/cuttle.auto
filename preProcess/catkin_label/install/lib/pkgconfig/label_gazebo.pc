@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/preProcess/catkin_label/install
+
+Name: label_gazebo
+Description: Description of label_gazebo
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: tf

@@ -40,6 +40,25 @@ namespace object_map
 		in_publisher.publish(message);
 	}
 
+	void PublishGridMapMsg(const grid_map::GridMap &in_gridmap, const ros::Publisher &in_publisher, const std::string &frame_id, tf::Transform &in_tf)
+	{
+		grid_map_msgs::GridMap map_message;
+		grid_map::GridMapRosConverter::toMessage(in_gridmap, map_message);
+
+		autoware_msgs::GridMapInfo gridmapinfo_message;
+		gridmapinfo_message.header.stamp = ros::Time::now();
+		gridmapinfo_message.header.frame_id = frame_id;
+		gridmapinfo_message.map = map_message;
+		gridmapinfo_message.trans.translation.x = in_tf.getOrigin().x();
+		gridmapinfo_message.trans.translation.y = in_tf.getOrigin().y();
+		gridmapinfo_message.trans.translation.z = in_tf.getOrigin().z();
+		gridmapinfo_message.trans.rotation.x = in_tf.getRotation().x();
+		gridmapinfo_message.trans.rotation.y = in_tf.getRotation().y();
+		gridmapinfo_message.trans.rotation.z = in_tf.getRotation().z();
+		gridmapinfo_message.trans.rotation.w = in_tf.getRotation().w();
+		in_publisher.publish(gridmapinfo_message);
+	}
+
 	void PublishOccupancyGrid(const grid_map::GridMap &in_gridmap,
 							  const ros::Publisher &in_publisher,
 							  const std::string &in_layer,
@@ -50,7 +69,6 @@ namespace object_map
 		nav_msgs::OccupancyGrid message;
 		grid_map::GridMapRosConverter::toOccupancyGrid(in_gridmap, in_layer, in_min_value, in_max_value, message);
 		message.info.origin.position.z = in_height;
-		// std::cout << message.header.frame_id << std::endl;
 		in_publisher.publish(message);
 	}
 

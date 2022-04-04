@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/label_gazebo
+
+Name: label_gazebo
+Description: Description of label_gazebo
+Version: 0.0.0
+Cflags: -I/home/arijin/cuttle.auto/preProcess/catkin_label/src/robotx_label/label_gazebo/include
+Libs: -L${prefix}/lib 
+Requires: tf

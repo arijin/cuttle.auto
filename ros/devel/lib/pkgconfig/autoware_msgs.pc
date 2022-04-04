@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/ros/devel
+
+Name: autoware_msgs
+Description: Description of autoware_msgs
+Version: 1.11.0
+Cflags: -I/home/arijin/cuttle.auto/ros/devel/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime std_msgs geometry_msgs sensor_msgs jsk_recognition_msgs grid_map_msgs

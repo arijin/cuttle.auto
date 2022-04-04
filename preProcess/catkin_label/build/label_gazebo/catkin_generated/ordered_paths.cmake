@@ -1,0 +1,1 @@
+set(ORDERED_PATHS "/home/arijin/cuttle.auto/preProcess/catkin_label/install/lib;/opt/ros/melodic/lib")

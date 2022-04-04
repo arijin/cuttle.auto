@@ -1,0 +1,49 @@
+[  0%] Built target std_msgs_generate_messages_eus
+[  0%] Built target sensor_msgs_generate_messages_lisp
+[  0%] Built target sensor_msgs_generate_messages_cpp
+[  0%] Built target geometry_msgs_generate_messages_py
+[  0%] Built target sensor_msgs_generate_messages_py
+[  0%] Built target sensor_msgs_generate_messages_eus
+[  0%] Built target std_msgs_generate_messages_nodejs
+[  0%] Built target sensor_msgs_generate_messages_nodejs
+[  0%] Built target geometry_msgs_generate_messages_cpp
+[  0%] Built target std_msgs_generate_messages_cpp
+[  0%] Built target geometry_msgs_generate_messages_eus
+[  0%] Built target std_msgs_generate_messages_py
+[  0%] Built target std_msgs_generate_messages_lisp
+[  0%] Built target geometry_msgs_generate_messages_lisp
+[  0%] Built target geometry_msgs_generate_messages_nodejs
+[ 50%] Built target cv_bridge
+[100%] Built target cv_bridge_boost
+[36mInstall the project...[0m
+-- Install configuration: ""
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/_setup_util.py
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/env.sh
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/setup.bash
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/local_setup.bash
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/setup.sh
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/local_setup.sh
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/setup.zsh
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/local_setup.zsh
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/.rosinstall
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/pkgconfig/cv_bridge.pc
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/share/cv_bridge/cmake/cv_bridge-extras.cmake
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/share/cv_bridge/cmake/cv_bridgeConfig.cmake
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/share/cv_bridge/cmake/cv_bridgeConfig-version.cmake
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/share/cv_bridge/package.xml
++ cd /home/arijin/cuttle.auto/preProcess/catkin_label/src/robotx_label/vision_opencv/cv_bridge
++ mkdir -p /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages
++ /usr/bin/env PYTHONPATH=/home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages:/home/arijin/cuttle.auto/preProcess/catkin_label/build/cv_bridge/lib/python3/dist-packages:/home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages:/opt/ros/melodic/lib/python2.7/dist-packages CATKIN_BINARY_DIR=/home/arijin/cuttle.auto/preProcess/catkin_label/build/cv_bridge /usr/bin/python3 /home/arijin/cuttle.auto/preProcess/catkin_label/src/robotx_label/vision_opencv/cv_bridge/setup.py build --build-base /home/arijin/cuttle.auto/preProcess/catkin_label/build/cv_bridge install --root=/ --install-layout=deb --prefix=/home/arijin/cuttle.auto/preProcess/catkin_label/install --install-scripts=/home/arijin/cuttle.auto/preProcess/catkin_label/install/bin
+running build
+running build_py
+running install
+running install_lib
+running install_egg_info
+Removing /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages/cv_bridge-1.13.0.egg-info
+Writing /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages/cv_bridge-1.13.0.egg-info
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/include/cv_bridge
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/include/cv_bridge/rgb_colors.h
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/include/cv_bridge/cv_bridge.h
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages/cv_bridge/boost/__init__.py
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/libcv_bridge.so
+-- Up-to-date: /home/arijin/cuttle.auto/preProcess/catkin_label/install/lib/python3/dist-packages/cv_bridge/boost/cv_bridge_boost.so

@@ -1,0 +1,1 @@
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/catkin_tools_prebuild/local_setup.bash

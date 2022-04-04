@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/preProcess/catkin_label/install
+
+Name: opencv_tests
+Description: Description of opencv_tests
+Version: 1.13.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/ros/install
+
+Name: libvectormap
+Description: Description of libvectormap
+Version: 1.11.0
+Cflags: -I${prefix}/include -I/usr/include/eigen3
+Libs: -L${prefix}/lib -llibvectormap
+Requires: vector_map

@@ -1,0 +1,1 @@
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/opencv_tests/lib/pkgconfig/opencv_tests.pc

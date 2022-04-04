@@ -1,0 +1,1 @@
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/cv_bridge/share/cv_bridge/cmake/cv_bridgeConfig-version.cmake

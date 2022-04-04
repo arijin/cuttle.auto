@@ -1,0 +1,2 @@
+common/cmake/autoware_build_flags:common/libvectormap:data/map_file:data/vector_map:data/vector_map_msgs:msgs/autoware_msgs:perception/semantics/packages/costmap_generator:perception/semantics/packages/object_map:perception/semantics/packages/road_occupancy_processor:quick_start
+-DCATKIN_DEVEL_PREFIX=/home/arijin/cuttle.auto/ros/devel -DCMAKE_INSTALL_PREFIX=/home/arijin/cuttle.auto/ros/install -G Unix Makefiles

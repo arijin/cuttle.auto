@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
         geometry_msgs
         sensor_msgs
         jsk_recognition_msgs
+        grid_map_msgs
         )
 
 
@@ -33,6 +34,7 @@ add_message_files(
             Centroids.msg
             DTLane.msg
             GeometricRectangle.msg
+            GridMapInfo.msg
             ICPStat.msg
             ImageObj.msg
             ImageObjRanged.msg
@@ -78,6 +80,7 @@ generate_messages(
         geometry_msgs
         sensor_msgs
         jsk_recognition_msgs
+        grid_map_msgs
 )
 
 catkin_package(
@@ -87,4 +90,5 @@ catkin_package(
         geometry_msgs
         sensor_msgs
         jsk_recognition_msgs
+        grid_map_msgs
 )

@@ -38,7 +38,7 @@ namespace object_map
 		private_node_handle_.param<double>("grid_position_y", grid_position_y_, 0);
 		private_node_handle_.param<double>("grid_position_z", grid_position_z_, 0);
 
-		publisher_grid_map_ = node_handle_.advertise<grid_map_msgs::GridMap>("grid_map_wayarea", 1, true);
+		publisher_grid_map_ = node_handle_.advertise<autoware_msgs::GridMapInfo>("grid_map_wayarea", 1, true);
 		publisher_occupancy_ = node_handle_.advertise<nav_msgs::OccupancyGrid>("occupancy_wayarea", 1, true);
 	}
 
@@ -60,24 +60,24 @@ namespace object_map
 			}
 
 			// timer start
-			auto start = std::chrono::system_clock::now();
+			// auto start = std::chrono::system_clock::now();
 
 			if (!water_area_points_.empty() || !unpassed_area_points_.empty())
 			{
 				FillPolygonRiverAreas(gridmap_, water_area_points_, unpassed_area_points_, grid_layer_name_, OCCUPANCY_NO_ROAD, grid_min_value_, OCCUPANCY_ROAD,
 									  grid_max_value_, tf_sensor_frame_, map_frame_,
 									  tf_listener_, transform_);
-				// publish
-				PublishGridMap(gridmap_, publisher_grid_map_);
-				PublishOccupancyGrid(gridmap_, publisher_occupancy_, grid_layer_name_, grid_min_value_, grid_max_value_, grid_position_z_);
 				transform_.child_frame_id_ = sensor_frame_;
+				// publish
+				PublishGridMapMsg(gridmap_, publisher_grid_map_, sensor_frame_, transform_);
+				PublishOccupancyGrid(gridmap_, publisher_occupancy_, grid_layer_name_, grid_min_value_, grid_max_value_, grid_position_z_);
 				tf_broadcaster_.sendTransform(transform_); // must after the OccupancyGrid msg published
 			}
 
 			// timer end
-			auto end = std::chrono::system_clock::now();
-			auto usec = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-			std::cout << "time: " << usec / 1000.0 << " [msec]" << std::endl;
+			// auto end = std::chrono::system_clock::now();
+			// auto usec = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			// std::cout << "time: " << usec / 1000.0 << " [msec]" << std::endl;
 
 			loop_rate.sleep();
 		}

@@ -28,6 +28,7 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
 #include <grid_map_cv/grid_map_cv.hpp>
+#include <autoware_msgs/GridMapInfo.h>
 
 namespace object_map
 {
@@ -45,7 +46,8 @@ namespace object_map
    * @param[in] in_publisher Valid Publisher object to use
    */
   void PublishGridMap(const grid_map::GridMap &in_gridmap, const ros::Publisher &in_publisher);
-
+  void PublishGridMapMsg(const grid_map::GridMap &in_gridmap, const ros::Publisher &in_publisher,
+                         const std::string &frame_id, tf::Transform &in_tf);
   /*!
    * Convert and publishes a GridMap layer to a standard Ros OccupancyGrid
    * @param[in] in_gridmap GridMap object to extract the layer

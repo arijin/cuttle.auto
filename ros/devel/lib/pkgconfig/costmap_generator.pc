@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/ros/devel
+
+Name: costmap_generator
+Description: Description of costmap_generator
+Version: 1.11.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: roscpp pcl_ros grid_map_ros tf autoware_msgs vector_map object_map

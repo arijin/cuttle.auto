@@ -1,0 +1,5 @@
+Symlinking /home/arijin/cuttle.auto/preProcess/catkin_label/devel/lib/libimage_geometry.so
+Symlinking /home/arijin/cuttle.auto/preProcess/catkin_label/devel/lib/python3/dist-packages/image_geometry/__init__.py
+Symlinking /home/arijin/cuttle.auto/preProcess/catkin_label/devel/lib/pkgconfig/image_geometry.pc
+Symlinking /home/arijin/cuttle.auto/preProcess/catkin_label/devel/share/image_geometry/cmake/image_geometryConfig-version.cmake
+Symlinking /home/arijin/cuttle.auto/preProcess/catkin_label/devel/share/image_geometry/cmake/image_geometryConfig.cmake

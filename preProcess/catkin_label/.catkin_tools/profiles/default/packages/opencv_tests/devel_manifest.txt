@@ -1,0 +1,5 @@
+robotx_label/vision_opencv/opencv_tests
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/opencv_tests/cmake.lock /home/arijin/cuttle.auto/preProcess/catkin_label/devel/./cmake.lock
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/opencv_tests/lib/pkgconfig/opencv_tests.pc /home/arijin/cuttle.auto/preProcess/catkin_label/devel/lib/pkgconfig/opencv_tests.pc
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/opencv_tests/share/opencv_tests/cmake/opencv_testsConfig-version.cmake /home/arijin/cuttle.auto/preProcess/catkin_label/devel/share/opencv_tests/cmake/opencv_testsConfig-version.cmake
+/home/arijin/cuttle.auto/preProcess/catkin_label/devel/.private/opencv_tests/share/opencv_tests/cmake/opencv_testsConfig.cmake /home/arijin/cuttle.auto/preProcess/catkin_label/devel/share/opencv_tests/cmake/opencv_testsConfig.cmake
