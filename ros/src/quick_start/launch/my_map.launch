@@ -1,0 +1,21 @@
+<launch>
+  <arg name="map_data_dir" default="/home/arijin/dataset/inwater_map/data/map" />
+  <arg name="tf_dir" default="/home/arijin/dataset/inwater_map/data/tf" />
+
+  <!-- TF -->
+  <!-- <include file="$(arg tf_dir)/tf.launch"/> -->
+  <node pkg="tf2_ros"  type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map" />
+  <!-- <node pkg="tf"  type="static_transform_publisher" name="map_to_mobility" args="20 0 0 3.2 0 0 /map /velo_link 10" /> -->
+  
+  <!-- Point Cloud -->
+  <node pkg="map_file" type="points_map_loader" name="points_map_loader" args="noupdate $(arg map_data_dir)/pointcloud_map/map.pcd" />
+
+  <!-- Vector Map -->
+  <!-- <node pkg="map_file" type="vector_map_loader" name="vector_map_loader" args="$(arg map_data_dir)/vector_map/lane.csv $(arg map_data_dir)/vector_map/line.csv $(arg map_data_dir)/vector_map/utilitypole.csv $(arg map_data_dir)/vector_map/curb.csv $(arg map_data_dir)/vector_map/node.csv $(arg map_data_dir)/vector_map/gutter.csv $(arg map_data_dir)/vector_map/point.csv $(arg map_data_dir)/vector_map/pole.csv $(arg map_data_dir)/vector_map/vector.csv $(arg map_data_dir)/vector_map/zebrazone.csv $(arg map_data_dir)/vector_map/streetlight.csv $(arg map_data_dir)/vector_map/whiteline.csv $(arg map_data_dir)/vector_map/road_surface_mark.csv $(arg map_data_dir)/vector_map/area.csv $(arg map_data_dir)/vector_map/idx.csv $(arg map_data_dir)/vector_map/dtlane.csv $(arg map_data_dir)/vector_map/signaldata.csv $(arg map_data_dir)/vector_map/poledata.csv $(arg map_data_dir)/vector_map/roadsign.csv $(arg map_data_dir)/vector_map/roadedge.csv $(arg map_data_dir)/vector_map/crosswalk.csv $(arg map_data_dir)/vector_map/stopline.csv" output="screen"/> -->
+  <node pkg="map_file" type="vector_map_loader" name="vector_map_loader" args="$(arg map_data_dir)/vector_map/lane.csv $(arg map_data_dir)/vector_map/line.csv $(arg map_data_dir)/vector_map/node.csv $(arg map_data_dir)/vector_map/point.csv $(arg map_data_dir)/vector_map/dtlane.csv $(arg map_data_dir)/vector_map/roadedge.csv $(arg map_data_dir)/vector_map/stopline.csv $(arg map_data_dir)/vector_map/area.csv $(arg map_data_dir)/vector_map/crosswalk.csv $(arg map_data_dir)/vector_map/waterarea.csv" output="screen"/>
+
+  <include file="$(find object_map)/launch/wayarea2grid.launch"/>
+
+  <node pkg="rviz"  type="rviz"  name="rviz"  args="-d $(find quick_start)/rviz/map.rviz" />
+
+</launch>
