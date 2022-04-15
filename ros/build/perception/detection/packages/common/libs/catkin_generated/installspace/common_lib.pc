@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/ros/install
+
+Name: common_lib
+Description: Description of common_lib
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lcommon_lib
+Requires: roscpp tf tf_conversions

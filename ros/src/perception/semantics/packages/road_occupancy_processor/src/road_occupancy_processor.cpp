@@ -103,6 +103,11 @@ void ROSRoadOccupancyProcessorApp::ConvertPointCloud(const pcl::PointCloud<pcl::
 		map2sensor_transform = FindTransform("/map", in_pointcloud.header.frame_id);
 		if (abs(in_pointcloud.header.stamp / 1000000.0 - map2sensor_transform.stamp_.toSec()) < 0.1)
 			break;
+		if (map2sensor_transform.stamp_.toSec() - in_pointcloud.header.stamp / 1000000.0 > 0.1)
+		{
+			ROS_INFO_STREAM("tf time overpassed pointcloud time!!!");
+			break;
+		}
 	}
 
 	// ROS_INFO_STREAM("cloud time: " << std::fixed << std::setprecision(5) << in_pointcloud.header.stamp / 1000000.0 << ", "
@@ -130,7 +135,7 @@ void ROSRoadOccupancyProcessorApp::GridMapCallback(const autoware_msgs::GridMapI
 	input_gridmap_position_ = input_grid.getPosition();
 
 	transform_.frame_id_ = "/map";
-	transform_.child_frame_id_ = sensor_frame_;
+	transform_.child_frame_id_ = input_gridmap_frame_;
 	transform_.setOrigin(tf::Vector3(in_message.trans.translation.x, in_message.trans.translation.y, in_message.trans.translation.z));
 	transform_.setRotation(tf::Quaternion(in_message.trans.rotation.x, in_message.trans.rotation.y, in_message.trans.rotation.z, in_message.trans.rotation.w));
 }

@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/ros/devel
+
+Name: roi_filters_lib
+Description: Description of roi_filters_lib
+Version: 0.0.0
+Cflags: -I/home/arijin/cuttle.auto/ros/src/perception/detection/packages/roi_filters/include
+Libs: -L${prefix}/lib -lroi_filters_lib
+Requires: 

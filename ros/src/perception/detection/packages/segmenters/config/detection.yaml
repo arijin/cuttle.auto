@@ -1,0 +1,40 @@
+detect: {
+  frame_id: "velo_link",
+
+  sub_pc_topic: "/kitti/velo/pointcloud",
+  sub_pc_queue_size: 1,
+
+  pub_pc_ground_topic: "/segmenter/points_ground",
+  pub_pc_nonground_topic: "/segmenter/points_nonground",
+  pub_pc_filtered_topic: "/kitti/velo/pointcloud_filtered",
+  pub_pc_clusters_topic: "/segmenter/points_clustered",
+  pub_object_topic: "/segmenter/lidar_objects",
+
+  ## Important to use roi filter for "Ground remover"
+  use_noise_filter: true,
+  use_roi_filter: true,
+  ## Segment non-ground point cloud, otherwise, only Ground Segmenter
+  use_ground_remover: false,
+  use_non_ground_segmenter: true,
+
+  ## Ground Segmenter type
+  ground_remover_type: "GroundPlaneFittingSegmenter",
+  #ground_remover_type: "GroundRANSACSegmenter",
+
+  ## non-ground segmenter type
+  non_ground_segmenter_type: "RegionEuclideanSegmenter",
+  #non_ground_segmenter_type: "EuclideanSegmenter", "RegionEuclideanSegmenter"
+
+  ## Object Builder
+  is_object_builder_open: true,
+  pub_objects_segmented_topic: "/segmenter/objects_segmented",
+
+  ## Object Filter
+  # volumetric model filter
+  use_object_model_filter: true,
+  VolumetricModels: {
+    use_water_obstacle_volumetric_model: true,
+    water_obstacle_volumetric_model: [0.1, 5., 0.1, 5., -0.3, 3.]
+  }
+  
+}

@@ -1,0 +1,8 @@
+prefix=/home/arijin/cuttle.auto/ros/devel
+
+Name: roi_map_object_filter
+Description: Description of roi_map_object_filter
+Version: 1.11.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: roscpp sensor_msgs geometry_msgs autoware_msgs grid_map_ros grid_map_cv grid_map_msgs tf

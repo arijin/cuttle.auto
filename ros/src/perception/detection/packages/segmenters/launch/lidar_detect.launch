@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+    <arg name="use_map_filter" default="true"/>
+
+    <!-- Launch detection_node -->
+    <node name="detection_node" pkg="segmenters_lib" type="detection_node" output="screen">
+        <!-- Load ROS parameters -->
+        <!-- Basic detector configuration -->
+        <rosparam command="load" file="$(find segmenters_lib)/config/detection.yaml"/>
+        <!-- Segmenter configuration for KiTTI -->
+        <rosparam command="load" file="$(find segmenters_lib)/config/kitti/Segmenter.yaml"/>
+    </node>
+
+    <!-- Launch detection_node -->
+    <include file="$(find roi_map_object_filter)/launch/map_filter.launch" if="$(arg use_map_filter)"/>
+
+    <!-- Launch rviz for visualization -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find segmenters_lib)/rviz/demo.rviz"/> -->
+</launch>

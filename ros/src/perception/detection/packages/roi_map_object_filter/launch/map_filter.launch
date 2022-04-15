@@ -1,0 +1,16 @@
+<launch>
+	<arg name="wayarea_topic_src" default="/grid_map_wayarea" /> <!-- GridMap Road data source topic-->
+	<arg name="wayarea_layer_name" default="wayarea" /> <!-- NAme of the layer in the GridMap containing the road data-->
+	<arg name="objects_topic_src" default="/segmenter/lidar_objects" />
+	<arg name="roi_objects_topic_src" default="/segmenter/objects_filtered" />
+    <arg name="roi_objects_markers_topic_src" default="/segmenter/objects_filtered_markers" />
+
+	<node name="roi_object_filter" pkg="roi_map_object_filter" type="roi_object_filter" output="screen">
+		<param name="wayarea_topic_src" value="$(arg wayarea_topic_src)" />
+		<param name="wayarea_layer_name" value="$(arg wayarea_layer_name)" />
+		<param name="objects_topic_src" value="$(arg objects_topic_src)" />
+		<param name="roi_objects_topic_src" value="$(arg roi_objects_topic_src)" />
+        <param name="roi_objects_markers_topic_src" value="$(arg roi_objects_markers_topic_src)" />
+	</node>
+
+</launch>
